@@ -1,3 +1,30 @@
+class Date(object):
+    year = None
+    month = None
+
+    def __init__(self, year, month):
+        self.year = year
+        self.month = month
+
+    def __eq__(self, other):
+        if isinstance(self, other.__class__) and self.year == other.year and self.month == other.month:
+            return True
+        else:
+            return False
+
+    def __hash__(self):
+        return self.year * 10 + self.month
+
+    def __repr__(self):
+        return self.year + '-' + self.month
+
+    def next_month(self):
+        if self.month + 1 > 12:
+            return Date(year=self.year + 1, month=1)
+        else:
+            return Date(year=self.year, month=self.month + 1)
+
+
 class Event(object):
     ip = None
     ttp = None
