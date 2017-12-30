@@ -1,3 +1,6 @@
+import datetime
+
+
 class Date(object):
     year = None
     month = None
@@ -110,6 +113,14 @@ def continuous_filter(dictlist, continuous):
     result_set = filter_month(collection, continuous)
     result_list = set_to_list(result_set)
     return result_list
+
+
+def get_datetime_year(dateTime):
+    return dateTime.datetime.year
+
+
+def get_datetime_month(dateTime):
+    return dateTime.datetime.month
 
 
 if __name__ == '__main__':
