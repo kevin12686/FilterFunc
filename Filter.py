@@ -13,10 +13,10 @@ class Date(object):
             return False
 
     def __hash__(self):
-        return self.year * 10 + self.month
+        return self.year * 100 + self.month
 
     def __repr__(self):
-        return self.year + '-' + self.month
+        return str(self.year) + '-' + str(self.month)
 
     def next_month(self):
         if self.month + 1 > 12:
@@ -28,12 +28,12 @@ class Date(object):
 class Event(object):
     ip = None
     ttp = None
-    month = None
+    date = None
 
-    def __init__(self, ip, ttp, month):
+    def __init__(self, ip, ttp, date):
         self.ip = ip
         self.ttp = ttp
-        self.month = month
+        self.date = date
 
     def __eq__(self, other):
         if isinstance(self, other.__class__) and self.ip is other.ip and self.ttp is other.ttp:
@@ -45,7 +45,7 @@ class Event(object):
         return self.ip.__hash__() + self.ttp.__hash__()
 
     def __repr__(self):
-        return '< Event IP: ' + self.ip + '  TTP: ' + self.ttp + '  Month: ' + self.month + '>'
+        return '< Event IP: ' + self.ip + '  TTP: ' + self.ttp + '  DATE: ' + str(self.date) + '>'
 
     def to_dict_without_month(self):
         return {'ip': self.ip, 'ttp': self.ttp}
@@ -54,21 +54,17 @@ class Event(object):
 def dictlist_to_eventlist(dictlist):
     result = list()
     for each in dictlist:
-        result.append(Event(each['ip'], each['ttp'], each['month']))
+        result.append(Event(each['ip'], each['ttp'], Date(each['year'], each['month'])))
     return result
 
 
-def generate_empty_collection():
-    empty_collection = dict()
-    for each in range(1, 13):
-        empty_collection[str(each)] = set()
-    return empty_collection
-
-
 def collect_event(event_list):
-    collect = generate_empty_collection()
-    for each in event_list:
-        collect[each.month] = collect[each.month] | {each}
+    collect = dict()
+    for each in sorted(event_list, key=lambda event: event.date.__hash__()):
+        try:
+            collect[each.date] = collect[each.date] | {each}
+        except KeyError:
+            collect[each.date] = {each}
     return collect
 
 
@@ -82,23 +78,29 @@ def set_to_list(input_set):
 def filter_month(collection_data, continuous):
     result = set()
     if continuous == 1:
-        for each in range(0, 12):
-            result |= collection_data[str(each + 1)]
+        for each in collection_data.keys():
+            result |= collection_data[each]
     elif continuous == 2:
-        for each in range(0, 12):
-            fir_month = each + 1
-            sec_month = (each + 1) % 12 + 1
-            temp = collection_data[str(fir_month)] & collection_data[str(sec_month)]
-            result |= temp
+        for each in collection_data.keys():
+            fir_month = each
+            sec_month = each.next_month()
+            try:
+                temp = collection_data[fir_month] & collection_data[sec_month]
+                result |= temp
+            except KeyError:
+                break
     else:
-        for each in range(0, 12):
-            fir_month = each + 1
-            sec_month = (each + 1) % 12 + 1
-            temp = collection_data[str(fir_month)] & collection_data[str(sec_month)]
-            for i in range(2, continuous):
-                n = (each + i) % 12 + 1
-                temp &= collection_data[str(n)]
-            result |= temp
+        for each in collection_data.keys():
+            fir_month = each
+            last = sec_month = each.next_month()
+            try:
+                temp = collection_data[fir_month] & collection_data[sec_month]
+                for i in range(2, continuous):
+                    last = last.next_month()
+                    temp &= collection_data[last]
+                result |= temp
+            except KeyError:
+                break
     return result
 
 
@@ -111,9 +113,10 @@ def continuous_filter(dictlist, continuous):
 
 
 if __name__ == '__main__':
-    a = {'ip': '127.0.0.1', 'ttp': '1', 'month': '1'}
-    b = {'ip': '127.0.0.1', 'ttp': '1', 'month': '2'}
-    c = {'ip': '127.0.0.1', 'ttp': '1', 'month': '11'}
-    d = {'ip': '127.0.0.1', 'ttp': '1', 'month': '12'}
-    data = [a, b, c, d]
+    a = {'ip': '127.0.0.1', 'ttp': '1', 'year': 2017, 'month': 12}
+    b = {'ip': '127.0.0.1', 'ttp': '1', 'year': 2018, 'month': 1}
+    c = {'ip': '127.0.0.1', 'ttp': '1', 'year': 2018, 'month': 2}
+    d = {'ip': '127.0.0.1', 'ttp': '1', 'year': 2018, 'month': 3}
+    e = {'ip': '127.0.0.1', 'ttp': '2', 'year': 2018, 'month': 4}
+    data = [a, b, c, d, e]
     print(continuous_filter(data, 4))
