@@ -71,10 +71,20 @@ def collect_event(event_list):
     return collect
 
 
-def set_to_list(input_set):
+def number_of_event(ip, ttp, event_list):
+    count = 0
+    for each in event_list:
+        if each.ip == ip and each.ttp == ttp:
+            count += 1
+    return count
+
+
+def set_to_list(input_set, event_list):
     result = list()
     for each in input_set:
-        result.append(each.to_dict_without_month())
+        temp = each.to_dict_without_month()
+        temp['count'] = number_of_event(event_list=event_list, **temp)
+        result.append(temp)
     return result
 
 
@@ -111,7 +121,7 @@ def continuous_filter(dictlist, continuous):
     data_list = dictlist_to_eventlist(dictlist)
     collection = collect_event(data_list)
     result_set = filter_month(collection, continuous)
-    result_list = set_to_list(result_set)
+    result_list = set_to_list(result_set, data_list)
     return result_list
 
 
