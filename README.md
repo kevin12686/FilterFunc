@@ -7,7 +7,7 @@ usage:
     A = continuous_filter(B, C)
     
     
- A -> a list of dict , dict_keys include 'ip'(str) and 'ttp'(str)
+ A -> a list of dict , dict_keys include 'ip'(str) , 'ttp'(str) and 'count'(int)
  
  B -> a list of dict , dict_keys include 'ip'(str) , 'ttp'(str) , 'year'(int) and 'month'(int)
  
