@@ -33,7 +33,7 @@ class Event(object):
     ttp = None
     date = None
 
-    def __init__(self, ip, ttp, date):
+    def __init__(self, ip, ttp, date=None):
         self.ip = ip
         self.ttp = ttp
         self.date = date
@@ -72,10 +72,11 @@ def collect_event(event_list):
 
 
 def number_of_event(ip, ttp, event_list):
-    count = 0
-    for each in event_list:
-        if each.ip == ip and each.ttp == ttp:
-            count += 1
+    # count = 0
+    # for each in event_list:
+    #     if each.ip == ip and each.ttp == ttp:
+    #         count += 1
+    count = event_list.count(Event(ip, ttp))
     return count
 
 
