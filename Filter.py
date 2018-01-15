@@ -1,4 +1,5 @@
 import datetime
+import json
 
 
 class Date(object):
@@ -39,7 +40,7 @@ class Event(object):
         self.date = date
 
     def __eq__(self, other):
-        if isinstance(self, other.__class__) and self.ip is other.ip and self.ttp is other.ttp:
+        if isinstance(self, other.__class__) and self.ip == other.ip and self.ttp == other.ttp:
             return True
         else:
             return False
